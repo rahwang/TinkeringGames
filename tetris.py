@@ -4,9 +4,6 @@ import sys, pygame
 pygame.init()
 SIZE = [860, 800]
 
-#class Block:
-
-
 
 class Game:
 
