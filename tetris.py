@@ -58,7 +58,7 @@ class Block:
     def drawBlock(self, screen):
         template = blocks[self.type]
         for i in range(4):
-            pixelOffsetX = self.blockOffsetX * BLOCKSIZE
+            pixelOffsetX = self.blockOffsetX * BLOCKSIZE 
             pixelOffsetY = self.blockOffsetY * BLOCKSIZE
             pygame.draw.rect(screen, self.color, [template[i][0] + pixelOffsetX, template[i][1] + pixelOffsetY, BLOCKSIZE, BLOCKSIZE])
     
