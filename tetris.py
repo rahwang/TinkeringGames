@@ -71,7 +71,7 @@ class Game:
                 ]
 
                 #randomly choose a block
-                for x in random.choice(blocks):
+                for x in blocks[0]:
                     x.draw_rect(self.screen, x)
                 
                 
