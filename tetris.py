@@ -46,31 +46,32 @@ class Game:
         #Init all the blocks / put here for now
         self.blocks = [
             [
-                Block((255,0,0), 355, 30 + (self.activeRow * BLOCKSIZE)),
-                Block((255,0,0), 390, 30 + (self.activeRow * BLOCKSIZE)),
-                Block((255,0,0), 425, 30 + (self.activeRow * BLOCKSIZE)),
-                Block((255,0,0), 425, 65 + (self.activeRow * BLOCKSIZE))
+
+                (355,30),
+                (390,30),
+                (425,30),
+                (425,65)
             ],
 
             [
-                Block((255,0,0), 355, 30 + (self.activeRow * BLOCKSIZE)),
-                Block((255,0,0), 390, 30 + (self.activeRow * BLOCKSIZE)),
-                Block((255,0,0), 425, 30 + (self.activeRow * BLOCKSIZE)),
-                Block((255,0,0), 460, 30 + (self.activeRow * BLOCKSIZE))
+                (355, 30),
+                (390, 30),
+                (425, 30),
+                (460, 30)
             ],
 
             [
-                Block((255,0,0), 355, 30 + (self.activeRow * BLOCKSIZE)),
-                Block((255,0,0), 390, 30 + (self.activeRow * BLOCKSIZE)),
-                Block((255,0,0), 425, 30 + (self.activeRow * BLOCKSIZE)),
-                Block((255,0,0), 390, 65 + (self.activeRow * BLOCKSIZE))
+                (355,30),
+                (390,30),
+                (425,30),
+                (390,65)
             ],
 
             [
-                Block((255,0,0), 355, 30 + (self.activeRow * BLOCKSIZE)),
-                Block((255,0,0), 355, 65 + (self.activeRow * BLOCKSIZE)),
-                Block((255,0,0), 390, 65 + (self.activeRow * BLOCKSIZE)),
-                Block((255,0,0), 390, 100 + (self.activeRow * BLOCKSIZE))
+                (355,30),
+                (355,66),
+                (390,65),
+                (390,100)
             ],
         ]
             
@@ -88,9 +89,7 @@ class Game:
         
             pygame.draw.rect(self.screen, (255,255,255), [250, 30, 350, 700])
             
-            # init array for permanents blocks
-            perm = []
-
+        
 
             # Every x second
             if self.timeElapsed > (self.defaultRate * self.tickSpeed): 
