@@ -5,17 +5,56 @@ pygame.init()
 SIZE = [860, 800]
 BLOCKSIZE = 35
 
+blocks = [
+    [ # L
+        (355,30),
+        (390,30),
+        (425,30),
+        (425,65)
+    ],
+
+    [ # line
+        (355, 30),
+        (390, 30),
+        (425, 30),
+        (460, 30)
+    ],
+
+    [ # half-cross
+        (355,30),
+        (390,30),
+        (425,30),
+        (390,65)
+    ],
+
+    [ # zigzag
+        (355,30),
+        (355,66),
+        (390,65),
+        (390,100)
+    ],
+]
+
 
 class Block:
 
-    def __init__(self, color, x, y):
+    def __init__(self, color, x, y, blocktype):
         self.color = color
-        self.x = x
-        self.y = y
-    
-    def drawBlock(self, screen, block):
-        pygame.draw.rect(screen, block.color, [block.x, block.y, 35, 35])
+        self.blockOffsetX = x
+        self.blockOffsetY = y
+        self.type = blocktype
 
+    def moveBlock(self, blockOffsetX, blockOffsetY):
+        self.blockOffsetX += blockOffsetX
+        self.blockOffsetY += blockOffsetY
+    
+    def drawBlock(self, screen):
+        template = blocks[self.type]
+        for i in range(4):
+            pixelOffsetX = self.blockOffsetX * BLOCKSIZE
+            pixelOffsetY = self.blockOffsetY * BLOCKSIZE
+            pygame.draw.rect(screen, self.color, [template[i][0] + pixelOffsetX, template[i][1] + pixelOffsetY, BLOCKSIZE, BLOCKSIZE])
+    
 
 
 class Board:
@@ -25,6 +64,7 @@ class Board:
         self.SIZEY = sizeY
 
     
+
 class Game:
 
     def __init__(self):
@@ -37,44 +77,10 @@ class Game:
         self.clock = pygame.time.Clock()
         self.timeElapsed = 0
         self.activeRow = 0
+        self.activeBlock = None
         self.defaultRate = 800
         self.tickSpeed = 1
-        self.createBlocks()
 
-    def createBlocks(self):
-
-        #Init all the blocks / put here for now
-        self.blocks = [
-            [
-
-                (355,30),
-                (390,30),
-                (425,30),
-                (425,65)
-            ],
-
-            [
-                (355, 30),
-                (390, 30),
-                (425, 30),
-                (460, 30)
-            ],
-
-            [
-                (355,30),
-                (390,30),
-                (425,30),
-                (390,65)
-            ],
-
-            [
-                (355,30),
-                (355,66),
-                (390,65),
-                (390,100)
-            ],
-        ]
-            
 
     def run(self):
 
@@ -84,24 +90,23 @@ class Game:
             dt = self.clock.tick() 
             self.timeElapsed += dt
 
+            # detect quit
             for event in pygame.event.get():
                 if event.type == pygame.QUIT: sys.exit()            
         
+            # draw board
             pygame.draw.rect(self.screen, (255,255,255), [250, 30, 350, 700])
-            
-        
 
             # Every x second
             if self.timeElapsed > (self.defaultRate * self.tickSpeed): 
-                # update pos of curr block (falling)
 
                 # randomly choose a block if first iteration
                 if self.activeRow == 0:
-                    num = random.randint(0,3)
+                    self.activeBlock = Block((255, 0, 0), 0, 5, 1)
 
                 # draw the block (falling)
-                for x in self.blocks[num]:
-                    x.drawBlock(self.screen, x)
+                self.activeBlock.moveBlock(0, 1)
+                self.activeBlock.drawBlock(self.screen)
                 
                 # Reset time to 0
                 self.timeElapsed = 0 
