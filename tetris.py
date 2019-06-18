@@ -3,6 +3,7 @@ import random
 
 pygame.init()
 SIZE = [860, 800]
+BLOCKSIZE = 35
 
 
 class Block:
@@ -12,12 +13,16 @@ class Block:
         self.x = x
         self.y = y
     
-    def draw_rect(self, screen, block):
+    def drawBlock(self, screen, block):
         pygame.draw.rect(screen, block.color, [block.x, block.y, 35, 35])
 
 
 
-class Block:
+class Board:
+
+    def __init__(self, sizeX, sizeY):
+        self.SIZEX = sizeX
+        self.SIZEY = sizeY
 
     
 class Game:
@@ -30,76 +35,44 @@ class Game:
         self.screen.fill((0,0,0))
 
         self.clock = pygame.time.Clock()
-        self.time_elapsed = 0
-        self.row = 0
-        self.default_rate = 800
-        self.tick_speed = 1
+        self.timeElapsed = 0
+        self.activeRow = 0
+        self.defaultRate = 800
+        self.tickSpeed = 1
         self.createBlocks()
 
-    def createBlocks(self):   def createBlocks(self):
+    def createBlocks(self):
 
         #Init all the blocks / put here for now
         self.blocks = [
             [
-                Block((255,0,0), 355, 30 + (self.row * 35)),
-                Block((255,0,0), 390, 30 + (self.row * 35)),
-                Block((255,0,0), 425, 30 + (self.row * 35)),
-                Block((255,0,0), 425, 65 + (self.row * 35))
+                Block((255,0,0), 355, 30 + (self.activeRow * BLOCKSIZE)),
+                Block((255,0,0), 390, 30 + (self.activeRow * BLOCKSIZE)),
+                Block((255,0,0), 425, 30 + (self.activeRow * BLOCKSIZE)),
+                Block((255,0,0), 425, 65 + (self.activeRow * BLOCKSIZE))
             ],
 
             [
-                Block((255,0,0), 355, 30 + (self.row * 35)),
-                Block((255,0,0), 390, 30 + (self.row * 35)),
-                Block((255,0,0), 425, 30 + (self.row * 35)),
-                Block((255,0,0), 460, 30 + (self.row * 35))
+                Block((255,0,0), 355, 30 + (self.activeRow * BLOCKSIZE)),
+                Block((255,0,0), 390, 30 + (self.activeRow * BLOCKSIZE)),
+                Block((255,0,0), 425, 30 + (self.activeRow * BLOCKSIZE)),
+                Block((255,0,0), 460, 30 + (self.activeRow * BLOCKSIZE))
             ],
 
             [
-                Block((255,0,0), 355, 30 + (self.row * 35)),
-                Block((255,0,0), 390, 30 + (self.row * 35)),
-                Block((255,0,0), 425, 30 + (self.row * 35)),
-                Block((255,0,0), 390, 65 + (self.row * 35))
+                Block((255,0,0), 355, 30 + (self.activeRow * BLOCKSIZE)),
+                Block((255,0,0), 390, 30 + (self.activeRow * BLOCKSIZE)),
+                Block((255,0,0), 425, 30 + (self.activeRow * BLOCKSIZE)),
+                Block((255,0,0), 390, 65 + (self.activeRow * BLOCKSIZE))
             ],
 
             [
-                Block((255,0,0), 355, 30 + (self.row * 35)),
-                Block((255,0,0), 355, 65 + (self.row * 35)),
-                Block((255,0,0), 390, 65 + (self.row * 35)),
-                Block((255,0,0), 390, 100 + (self.row * 35))
+                Block((255,0,0), 355, 30 + (self.activeRow * BLOCKSIZE)),
+                Block((255,0,0), 355, 65 + (self.activeRow * BLOCKSIZE)),
+                Block((255,0,0), 390, 65 + (self.activeRow * BLOCKSIZE)),
+                Block((255,0,0), 390, 100 + (self.activeRow * BLOCKSIZE))
             ],
         ]
-
-        #Init all the blocks / put here for now
-        self.blocks = [
-            [
-                Block((255,0,0), 355, 30 + (self.row * 35)),
-                Block((255,0,0), 390, 30 + (self.row * 35)),
-                Block((255,0,0), 425, 30 + (self.row * 35)),
-                Block((255,0,0), 425, 65 + (self.row * 35))
-            ],
-
-            [
-                Block((255,0,0), 355, 30 + (self.row * 35)),
-                Block((255,0,0), 390, 30 + (self.row * 35)),
-                Block((255,0,0), 425, 30 + (self.row * 35)),
-                Block((255,0,0), 460, 30 + (self.row * 35))
-            ],
-
-            [
-                Block((255,0,0), 355, 30 + (self.row * 35)),
-                Block((255,0,0), 390, 30 + (self.row * 35)),
-                Block((255,0,0), 425, 30 + (self.row * 35)),
-                Block((255,0,0), 390, 65 + (self.row * 35))
-            ],
-
-            [
-                Block((255,0,0), 355, 30 + (self.row * 35)),
-                Block((255,0,0), 355, 65 + (self.row * 35)),
-                Block((255,0,0), 390, 65 + (self.row * 35)),
-                Block((255,0,0), 390, 100 + (self.row * 35))
-            ],
-        ]
-
             
 
     def run(self):
@@ -108,7 +81,7 @@ class Game:
            
             # init clock
             dt = self.clock.tick() 
-            self.time_elapsed += dt
+            self.timeElapsed += dt
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT: sys.exit()            
@@ -120,27 +93,25 @@ class Game:
 
 
             # Every x second
-            print(self.row)
-            if self.time_elapsed > (self.default_rate * self.tick_speed): 
+            if self.timeElapsed > (self.defaultRate * self.tickSpeed): 
                 # update pos of curr block (falling)
 
                 # randomly choose a block if first iteration
-                if self.row == 0:
+                if self.activeRow == 0:
                     num = random.randint(0,3)
 
                 # draw the block (falling)
                 for x in self.blocks[num]:
-                    x.draw_rect(self.screen, x)
+                    x.drawBlock(self.screen, x)
                 
                 # Reset time to 0
-                self.time_elapsed = 0 
+                self.timeElapsed = 0 
                 
-                # If last self.row reach change block
-                if self.row == 18:
-                    self.row = 0
+                # If last self.activeRow reach change block
+                if self.activeRow == 18:
+                    self.activeRow = 0
                 else:
-                    self.row += 1
-                #print(self.row)
+                    self.activeRow += 1
 
                 pygame.display.flip()            
 
