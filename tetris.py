@@ -16,8 +16,6 @@ class Block:
         pygame.draw.rect(screen, block.color, [block.x, block.y, 35, 35])
 
     
-
-
 class Game:
 
     def __init__(self):
@@ -26,9 +24,7 @@ class Game:
         pygame.display.set_caption("Tetris")
          #Set the background to black
         self.screen.fill((0,0,0))
-        
-
-    
+            
 
     def run(self):
 
@@ -67,11 +63,30 @@ class Game:
                         Block((255,0,0), 390, 30 + (row * 35)),
                         Block((255,0,0), 425, 30 + (row * 35)),
                         Block((255,0,0), 460, 30 + (row * 35))
-                    ]
+                    ],
+
+                    [
+                        Block((255,0,0), 355, 30 + (row * 35)),
+                        Block((255,0,0), 390, 30 + (row * 35)),
+                        Block((255,0,0), 425, 30 + (row * 35)),
+                        Block((255,0,0), 390, 65 + (row * 35))
+                    ],
+
+                    [
+                        Block((255,0,0), 355, 30 + (row * 35)),
+                        Block((255,0,0), 355, 65 + (row * 35)),
+                        Block((255,0,0), 390, 65 + (row * 35)),
+                        Block((255,0,0), 390, 100 + (row * 35))
+                    ],
                 ]
 
-                #randomly choose a block
-                for x in blocks[0]:
+                
+
+
+                #randomly choose a block if first iteration
+                if row == 0:
+                    num = random.randint(0,3)
+                for x in blocks[num]:
                     x.draw_rect(self.screen, x)
                 
                 
