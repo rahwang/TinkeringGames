@@ -29,15 +29,16 @@ blocks = [
 
     [ # zigzag
         (355,30),
-        (355,656),
+        (355,65),
         (390,65),
         (390,100)
     ],
 ]
 
 
-unactiveBlocks = []
-
+COLORS = [
+    [0,0,0], [255,0,0], [0,255,0], [0,0,255]
+]
 
 
 
@@ -69,8 +70,13 @@ class Board:
     def __init__(self, sizeX, sizeY):
         self.SIZEX = sizeX
         self.SIZEY = sizeY
-
-    
+        self.cells = []
+        for i, a in enumerate(range(0, sizeY)):
+            row = []
+            for cell in range(0, sizeX):
+                row.append(COLORS[0])    
+            self.cells.append(row)
+        print(self.cells)
 
 class Game:
 
@@ -87,6 +93,7 @@ class Game:
         self.activeBlock = None
         self.defaultRate = 800
         self.tickSpeed = 1
+        Board(20, 10)
 
 
     def run(self):
@@ -127,8 +134,6 @@ class Game:
                 # If last self.activeRow reach change block
                 if self.activeRow == 17:
                     self.activeRow = 0
-                    # Store active block 
-                    unactiveBlocks.append(self.activeBlock)
                    
                 else:
                     self.activeRow += 1
