@@ -29,11 +29,16 @@ blocks = [
 
     [ # zigzag
         (355,30),
-        (355,66),
+        (355,656),
         (390,65),
         (390,100)
     ],
 ]
+
+
+unactiveBlocks = []
+
+
 
 
 class Block:
@@ -47,7 +52,9 @@ class Block:
     def moveBlock(self, blockOffsetX, blockOffsetY):
         self.blockOffsetX += blockOffsetX
         self.blockOffsetY += blockOffsetY
-    
+
+
+
     def drawBlock(self, screen):
         template = blocks[self.type]
         for i in range(4):
@@ -92,17 +99,23 @@ class Game:
 
             # detect quit
             for event in pygame.event.get():
-                if event.type == pygame.QUIT: sys.exit()            
-        
+                if event.type == pygame.QUIT: sys.exit()   
+                
+                # if key pressed then rotate
+                #if event.type == pygame.KEYDOWN:
+                    #if event.key == pygame.K_e:
+                        
+
             # draw board
             pygame.draw.rect(self.screen, (255,255,255), [250, 30, 350, 700])
 
             # Every x second
             if self.timeElapsed > (self.defaultRate * self.tickSpeed): 
+                
 
                 # randomly choose a block if first iteration
                 if self.activeRow == 0:
-                    self.activeBlock = Block((255, 0, 0), 0, 5, 1)
+                    self.activeBlock = Block((255, 0, 0), 0, 0, random.randint(0,3))
 
                 # draw the block (falling)
                 self.activeBlock.moveBlock(0, 1)
@@ -112,8 +125,11 @@ class Game:
                 self.timeElapsed = 0 
                 
                 # If last self.activeRow reach change block
-                if self.activeRow == 18:
+                if self.activeRow == 17:
                     self.activeRow = 0
+                    # Store active block 
+                    unactiveBlocks.append(self.activeBlock)
+                   
                 else:
                     self.activeRow += 1
 
