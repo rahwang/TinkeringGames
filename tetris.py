@@ -15,6 +15,10 @@ class Block:
     def draw_rect(self, screen, block):
         pygame.draw.rect(screen, block.color, [block.x, block.y, 35, 35])
 
+
+
+class Block:
+
     
 class Game:
 
@@ -24,82 +28,122 @@ class Game:
         pygame.display.set_caption("Tetris")
          #Set the background to black
         self.screen.fill((0,0,0))
+
+        self.clock = pygame.time.Clock()
+        self.time_elapsed = 0
+        self.row = 0
+        self.default_rate = 800
+        self.tick_speed = 1
+        self.createBlocks()
+
+    def createBlocks(self):   def createBlocks(self):
+
+        #Init all the blocks / put here for now
+        self.blocks = [
+            [
+                Block((255,0,0), 355, 30 + (self.row * 35)),
+                Block((255,0,0), 390, 30 + (self.row * 35)),
+                Block((255,0,0), 425, 30 + (self.row * 35)),
+                Block((255,0,0), 425, 65 + (self.row * 35))
+            ],
+
+            [
+                Block((255,0,0), 355, 30 + (self.row * 35)),
+                Block((255,0,0), 390, 30 + (self.row * 35)),
+                Block((255,0,0), 425, 30 + (self.row * 35)),
+                Block((255,0,0), 460, 30 + (self.row * 35))
+            ],
+
+            [
+                Block((255,0,0), 355, 30 + (self.row * 35)),
+                Block((255,0,0), 390, 30 + (self.row * 35)),
+                Block((255,0,0), 425, 30 + (self.row * 35)),
+                Block((255,0,0), 390, 65 + (self.row * 35))
+            ],
+
+            [
+                Block((255,0,0), 355, 30 + (self.row * 35)),
+                Block((255,0,0), 355, 65 + (self.row * 35)),
+                Block((255,0,0), 390, 65 + (self.row * 35)),
+                Block((255,0,0), 390, 100 + (self.row * 35))
+            ],
+        ]
+
+        #Init all the blocks / put here for now
+        self.blocks = [
+            [
+                Block((255,0,0), 355, 30 + (self.row * 35)),
+                Block((255,0,0), 390, 30 + (self.row * 35)),
+                Block((255,0,0), 425, 30 + (self.row * 35)),
+                Block((255,0,0), 425, 65 + (self.row * 35))
+            ],
+
+            [
+                Block((255,0,0), 355, 30 + (self.row * 35)),
+                Block((255,0,0), 390, 30 + (self.row * 35)),
+                Block((255,0,0), 425, 30 + (self.row * 35)),
+                Block((255,0,0), 460, 30 + (self.row * 35))
+            ],
+
+            [
+                Block((255,0,0), 355, 30 + (self.row * 35)),
+                Block((255,0,0), 390, 30 + (self.row * 35)),
+                Block((255,0,0), 425, 30 + (self.row * 35)),
+                Block((255,0,0), 390, 65 + (self.row * 35))
+            ],
+
+            [
+                Block((255,0,0), 355, 30 + (self.row * 35)),
+                Block((255,0,0), 355, 65 + (self.row * 35)),
+                Block((255,0,0), 390, 65 + (self.row * 35)),
+                Block((255,0,0), 390, 100 + (self.row * 35))
+            ],
+        ]
+
             
 
     def run(self):
 
-        # Set up virtual time
-        clock = pygame.time.Clock()
-        time_elapsed = 0
-        row = 0
-        
         while 1:
            
             # init clock
-            dt = clock.tick() 
-            time_elapsed += dt
-            #print(time_elapsed)
+            dt = self.clock.tick() 
+            self.time_elapsed += dt
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT: sys.exit()            
         
             pygame.draw.rect(self.screen, (255,255,255), [250, 30, 350, 700])
             
-            # Every x seconde
-            if time_elapsed > 800: 
+            # init array for permanents blocks
+            perm = []
+
+
+            # Every x second
+            print(self.row)
+            if self.time_elapsed > (self.default_rate * self.tick_speed): 
                 # update pos of curr block (falling)
 
-                #Init all the blocks / put here for now
-                blocks = [
-                    [
-                        Block((255,0,0), 355, 30 + (row * 35)),
-                        Block((255,0,0), 390, 30 + (row * 35)),
-                        Block((255,0,0), 425, 30 + (row * 35)),
-                        Block((255,0,0), 425, 65 + (row * 35))
-                    ],
-
-                    [
-                        Block((255,0,0), 355, 30 + (row * 35)),
-                        Block((255,0,0), 390, 30 + (row * 35)),
-                        Block((255,0,0), 425, 30 + (row * 35)),
-                        Block((255,0,0), 460, 30 + (row * 35))
-                    ],
-
-                    [
-                        Block((255,0,0), 355, 30 + (row * 35)),
-                        Block((255,0,0), 390, 30 + (row * 35)),
-                        Block((255,0,0), 425, 30 + (row * 35)),
-                        Block((255,0,0), 390, 65 + (row * 35))
-                    ],
-
-                    [
-                        Block((255,0,0), 355, 30 + (row * 35)),
-                        Block((255,0,0), 355, 65 + (row * 35)),
-                        Block((255,0,0), 390, 65 + (row * 35)),
-                        Block((255,0,0), 390, 100 + (row * 35))
-                    ],
-                ]
-
-                
-
-
-                #randomly choose a block if first iteration
-                if row == 0:
+                # randomly choose a block if first iteration
+                if self.row == 0:
                     num = random.randint(0,3)
-                for x in blocks[num]:
+
+                # draw the block (falling)
+                for x in self.blocks[num]:
                     x.draw_rect(self.screen, x)
                 
-                
                 # Reset time to 0
-                time_elapsed= 0 
+                self.time_elapsed = 0 
                 
-                # If last row reach change block
-                if row == 18:
-                    row = 0
+                # If last self.row reach change block
+                if self.row == 18:
+                    self.row = 0
                 else:
-                    row += 1
+                    self.row += 1
+                #print(self.row)
 
-                pygame.display.flip()
+                pygame.display.flip()            
+
 
 if __name__ == "__main__":
     game = Game()
