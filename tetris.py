@@ -11,46 +11,48 @@ BOARD_BLOCKS_WIDTH = 10
 BOARD_BLOCKS_HEIGHT = 20
 SIZEX = (BOARD_OFFSETX * 2 + BOARD_BLOCKS_WIDTH) * BLOCKSIZE
 SIZEY = (BOARD_OFFSETY * 2 + BOARD_BLOCKS_HEIGHT) * BLOCKSIZE
-
 SIZE = [SIZEX , SIZEY]
 
 blocks = [
     [ # L
-        (355,30),
-        (390,30),
-        (425,30),
-        (425,65)
+        #(355,30),
+        #(390,30),
+        #(425,30),
+        #(425,65)
+        (((BOARD_OFFSETX + 3) * BLOCKSIZE), ((BOARD_OFFSETY) * BLOCKSIZE)),
+        (((BOARD_OFFSETX + 4) * BLOCKSIZE), ((BOARD_OFFSETY) * BLOCKSIZE)),
+        (((BOARD_OFFSETX + 5) * BLOCKSIZE), ((BOARD_OFFSETY) * BLOCKSIZE)),
+        (((BOARD_OFFSETX + 5) * BLOCKSIZE), ((BOARD_OFFSETY + 1) * BLOCKSIZE))
     ],
 
     [ # Square
-        (355, 30),
-        (355, 65),
-        (390, 30),
-        (390, 65)
+        (((BOARD_OFFSETX + 3) * BLOCKSIZE), ((BOARD_OFFSETY) * BLOCKSIZE)),
+        (((BOARD_OFFSETX + 3) * BLOCKSIZE), ((BOARD_OFFSETY + 1) * BLOCKSIZE)),
+        (((BOARD_OFFSETX + 4) * BLOCKSIZE), ((BOARD_OFFSETY) * BLOCKSIZE)),
+        (((BOARD_OFFSETX + 4) * BLOCKSIZE), ((BOARD_OFFSETY + 1) * BLOCKSIZE)),
     ],
 
     [ # line
-        (355, 30),
-        (390, 30),
-        (425, 30),
-        (460, 30)
+        (((BOARD_OFFSETX + 3) * BLOCKSIZE), ((BOARD_OFFSETY) * BLOCKSIZE)),
+        (((BOARD_OFFSETX + 4) * BLOCKSIZE), ((BOARD_OFFSETY) * BLOCKSIZE)),
+        (((BOARD_OFFSETX + 5) * BLOCKSIZE), ((BOARD_OFFSETY) * BLOCKSIZE)),
+        (((BOARD_OFFSETX + 6) * BLOCKSIZE), ((BOARD_OFFSETY) * BLOCKSIZE)),
     ],
 
     [ # half-cross
-        (355,30),
-        (390,30),
-        (425,30),
-        (390,65)
+        (((BOARD_OFFSETX + 3) * BLOCKSIZE), ((BOARD_OFFSETY) * BLOCKSIZE)),
+        (((BOARD_OFFSETX + 4) * BLOCKSIZE), ((BOARD_OFFSETY) * BLOCKSIZE)),
+        (((BOARD_OFFSETX + 5) * BLOCKSIZE), ((BOARD_OFFSETY) * BLOCKSIZE)),
+        (((BOARD_OFFSETX + 4) * BLOCKSIZE), ((BOARD_OFFSETY + 1) * BLOCKSIZE)),
     ],
 
     [ # zigzag
-        (355,30),
-        (355,65),
-        (390,65),
-        (390,100)
+        (((BOARD_OFFSETX + 3) * BLOCKSIZE), ((BOARD_OFFSETY) * BLOCKSIZE)),
+        (((BOARD_OFFSETX + 3) * BLOCKSIZE), ((BOARD_OFFSETY + 1) * BLOCKSIZE)),
+        (((BOARD_OFFSETX + 4) * BLOCKSIZE), ((BOARD_OFFSETY + 1) * BLOCKSIZE)),
+        (((BOARD_OFFSETX + 4) * BLOCKSIZE), ((BOARD_OFFSETY + 2) * BLOCKSIZE)),
     ],
 ]
-
 
 COLORS = [
     [255,255,255], [255,0,0], [0,255,0], [0,0,255]
@@ -66,11 +68,33 @@ class Block:
         self.blockOffsetY = y
         self.type = blocktype
 
+    def checkCollision(self,grid):
+        template = blocks[self.type]
+        for i in range(4):
+            pixelOffsetX = self.blockOffsetX * BLOCKSIZE 
+            pixelOffsetY = self.blockOffsetY * BLOCKSIZE
+            y = ((template[i][1] + pixelOffsetY) // BLOCKSIZE) - 1
+            x = ((template[i][0] + pixelOffsetX) // BLOCKSIZE) - 7
+            #check
+            if x + 1 == BOARD_BLOCKS_WIDTH or y + 1 == BOARD_BLOCKS_HEIGHT or grid[x][y + 1] != 0:
+                return True
+        return False
+
+    def storeBlock(self, grid):
+        template = blocks[self.type]
+        for i in range(4):
+            pixelOffsetX = self.blockOffsetX * BLOCKSIZE 
+            pixelOffsetY = self.blockOffsetY * BLOCKSIZE
+            y = ((template[i][1] + pixelOffsetY) // BLOCKSIZE) - 1
+            x = ((template[i][0] + pixelOffsetX) // BLOCKSIZE) - 7
+            grid[x][y]= 1
+
+
+
     def moveBlock(self, blockOffsetX, blockOffsetY):
         self.blockOffsetX += blockOffsetX
         self.blockOffsetY += blockOffsetY
-        print(blockOffsetX)
-        print(blockOffsetY)
+        
 
 
     def drawBlock(self, screen):
@@ -78,8 +102,7 @@ class Block:
         for i in range(4):
             pixelOffsetX = self.blockOffsetX * BLOCKSIZE 
             pixelOffsetY = self.blockOffsetY * BLOCKSIZE
-            print(template[i][0] + pixelOffsetX)
-            print(template[i][1] + pixelOffsetY)
+
             pygame.draw.rect(screen, self.color, [template[i][0] + pixelOffsetX, template[i][1] + pixelOffsetY, BLOCKSIZE, BLOCKSIZE])
     
 
@@ -95,6 +118,7 @@ class Board:
             for cell in range(0, sizeX):
                 row.append(0)    
             self.cells.append(row)
+
 
     def printCell(self, i, j):
         colorType = self.cells[i][j]
@@ -124,7 +148,7 @@ class Game:
         self.activeRow = 0
         self.activeBlock = None
         self.defaultRate = 800
-        self.tickSpeed = 1
+        self.tickSpeed = 0.3
         self.board = Board(self.screen, 20, 10)
 
 
@@ -155,22 +179,27 @@ class Game:
 
                 # randomly choose a block if first iteration
                 if self.activeRow == 0:
-                    self.activeBlock = Block((255, 0, 0), 0, 0, random.randint(0,3))
+                    self.activeBlock = Block((255, 0, 0), 0, 0, random.randint(0,4))
 
-                # draw the block (falling)
-                self.activeBlock.moveBlock(0, 1)
 
-                self.activeBlock.drawBlock(self.screen)
-                
-                # Reset time to 0
-                self.timeElapsed = 0 
-                
-                # If last self.activeRow reach change block
-                if self.activeRow == 17:
+                # check collision
+                if (self.activeBlock.checkCollision(self.board.cells)) == True:
                     self.activeRow = 0
-                   
+                    # insert block into grid
+                    self.activeBlock.storeBlock(self.board.cells)
+                    
                 else:
                     self.activeRow += 1
+                    # draw the block (falling)
+                    self.activeBlock.moveBlock(0, 1)
+
+                    self.activeBlock.drawBlock(self.screen)
+
+                    # Reset time to 0
+                    self.timeElapsed = 0 
+                
+                
+            
 
                 pygame.display.flip()            
 
