@@ -75,7 +75,8 @@ class Block:
             pixelOffsetY = self.blockOffsetY * BLOCKSIZE
             y = ((template[i][1] + pixelOffsetY) // BLOCKSIZE) - 1
             x = ((template[i][0] + pixelOffsetX) // BLOCKSIZE) - 7
-            #check
+            
+            #check if reach edges or other block
             if x + 1 == BOARD_BLOCKS_WIDTH or y + 1 == BOARD_BLOCKS_HEIGHT or grid[x][y + 1] != 0:
                 return True
         return False
@@ -91,10 +92,12 @@ class Block:
 
 
 
-    def moveBlock(self, blockOffsetX, blockOffsetY):
+    def fallBlock(self, blockOffsetX, blockOffsetY):
         self.blockOffsetX += blockOffsetX
         self.blockOffsetY += blockOffsetY
         
+    def moveBlock(self, blockOffsetX):
+        self.blockOffsetX += blockOffsetX
 
 
     def drawBlock(self, screen):
@@ -165,8 +168,11 @@ class Game:
                 if event.type == pygame.QUIT: sys.exit()   
                 
                 # if key pressed then rotate
-                #if event.type == pygame.KEYDOWN:
-                    #if event.key == pygame.K_e:
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_e:
+                        self.activeBlock.moveBlock(1)
+                    if event.key == pygame.K_w:
+                        self.activeBlock.moveBlock(-1)
                         
 
             # draw board
@@ -191,7 +197,7 @@ class Game:
                 else:
                     self.activeRow += 1
                     # draw the block (falling)
-                    self.activeBlock.moveBlock(0, 1)
+                    self.activeBlock.fallBlock(0, 1)
 
                     self.activeBlock.drawBlock(self.screen)
 
