@@ -2,8 +2,17 @@ import sys, pygame
 import random
 
 pygame.init()
-SIZE = [860, 800]
 BLOCKSIZE = 35
+
+# These measurements are all number of blocks
+BOARD_OFFSETX = 7
+BOARD_OFFSETY = 1
+BOARD_BLOCKS_WIDTH = 10
+BOARD_BLOCKS_HEIGHT = 20
+SIZEX = (BOARD_OFFSETX * 2 + BOARD_BLOCKS_WIDTH) * BLOCKSIZE
+SIZEY = (BOARD_OFFSETY * 2 + BOARD_BLOCKS_HEIGHT) * BLOCKSIZE
+
+SIZE = [SIZEX , SIZEY]
 
 blocks = [
     [ # L
@@ -11,6 +20,13 @@ blocks = [
         (390,30),
         (425,30),
         (425,65)
+    ],
+
+    [ # Square
+        (355, 30),
+        (355, 65),
+        (390, 30),
+        (390, 65)
     ],
 
     [ # line
@@ -37,7 +53,7 @@ blocks = [
 
 
 COLORS = [
-    [0,0,0], [255,0,0], [0,255,0], [0,0,255]
+    [255,255,255], [255,0,0], [0,255,0], [0,0,255]
 ]
 
 
@@ -53,7 +69,8 @@ class Block:
     def moveBlock(self, blockOffsetX, blockOffsetY):
         self.blockOffsetX += blockOffsetX
         self.blockOffsetY += blockOffsetY
-
+        print(blockOffsetX)
+        print(blockOffsetY)
 
 
     def drawBlock(self, screen):
@@ -61,22 +78,37 @@ class Block:
         for i in range(4):
             pixelOffsetX = self.blockOffsetX * BLOCKSIZE 
             pixelOffsetY = self.blockOffsetY * BLOCKSIZE
+            print(template[i][0] + pixelOffsetX)
+            print(template[i][1] + pixelOffsetY)
             pygame.draw.rect(screen, self.color, [template[i][0] + pixelOffsetX, template[i][1] + pixelOffsetY, BLOCKSIZE, BLOCKSIZE])
     
 
-
 class Board:
 
-    def __init__(self, sizeX, sizeY):
+    def __init__(self, screen, sizeX, sizeY):
         self.SIZEX = sizeX
         self.SIZEY = sizeY
+        self.screen = screen
         self.cells = []
         for i, a in enumerate(range(0, sizeY)):
             row = []
             for cell in range(0, sizeX):
-                row.append(COLORS[0])    
+                row.append(0)    
             self.cells.append(row)
-        print(self.cells)
+
+    def printCell(self, i, j):
+        colorType = self.cells[i][j]
+        x = BOARD_OFFSETX * BLOCKSIZE
+        y = BOARD_OFFSETY * BLOCKSIZE
+        x += i * BLOCKSIZE
+        y += j * BLOCKSIZE 
+        pygame.draw.rect(self.screen, COLORS[colorType], [x, y, BLOCKSIZE, BLOCKSIZE])
+
+    def printBoard(self):
+        for i, row in enumerate(self.cells):
+            for j, col in enumerate(row): 
+                self.printCell(i,j)
+    
 
 class Game:
 
@@ -93,7 +125,7 @@ class Game:
         self.activeBlock = None
         self.defaultRate = 800
         self.tickSpeed = 1
-        Board(20, 10)
+        self.board = Board(self.screen, 20, 10)
 
 
     def run(self):
@@ -114,7 +146,8 @@ class Game:
                         
 
             # draw board
-            pygame.draw.rect(self.screen, (255,255,255), [250, 30, 350, 700])
+            #pygame.draw.rect(self.screen, (255,255,255), [BOARD_OFFSETX * BLOCKSIZE, BOARD_OFFSETY * BLOCKSIZE, BLOCKSIZE * BOARD_BLOCKS_WIDTH, BLOCKSIZE * BOARD_BLOCKS_HEIGHT])
+            self.board.printBoard()
 
             # Every x second
             if self.timeElapsed > (self.defaultRate * self.tickSpeed): 
@@ -126,6 +159,7 @@ class Game:
 
                 # draw the block (falling)
                 self.activeBlock.moveBlock(0, 1)
+
                 self.activeBlock.drawBlock(self.screen)
                 
                 # Reset time to 0
