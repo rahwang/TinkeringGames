@@ -17,10 +17,6 @@ SIZE = [SIZEX , SIZEY]
 blockColors = []
 blocks = [
     [ # L
-        #(355,30),
-        #(390,30),
-        #(425,30),
-        #(425,65)
         (((BOARD_OFFSETX + 3) * BLOCKSIZE), ((BOARD_OFFSETY) * BLOCKSIZE)),
         (((BOARD_OFFSETX + 4) * BLOCKSIZE), ((BOARD_OFFSETY) * BLOCKSIZE)),
         (((BOARD_OFFSETX + 5) * BLOCKSIZE), ((BOARD_OFFSETY) * BLOCKSIZE)),
@@ -154,18 +150,21 @@ class Board:
 
     def checkLine(self):
         #For each col
-        for col in range(0, BOARD_BLOCKS_HEIGHT):
+        for row in range(0, BOARD_BLOCKS_HEIGHT):
             count = 0
-            for row in range(0, BOARD_BLOCKS_WIDTH):
+            for col in range(0, BOARD_BLOCKS_WIDTH):
             
                 #check if empty
-                if self.cells[row][col] != 0:
+                if self.cells[col][row] != 0:
                     count += 1
-                # if line full
-                if count == BOARD_BLOCKS_WIDTH - 1:
-                    print(row)
-                    return True
+            # if line full
+            if count == BOARD_BLOCKS_WIDTH - 1:
+                print(row)
+                return True, row
         return False, None
+
+    def eraseLine(self, row):
+        return None
                     
     
 
