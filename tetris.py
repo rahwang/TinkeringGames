@@ -5,6 +5,7 @@ pygame.init()
 BLOCKSIZE = 35
 
 # These measurements are all number of blocks
+PIXEL_OUTLINE = 2
 BOARD_OFFSETX = 7
 BOARD_OFFSETY = 1
 BOARD_BLOCKS_WIDTH = 10
@@ -13,6 +14,7 @@ SIZEX = (BOARD_OFFSETX * 2 + BOARD_BLOCKS_WIDTH) * BLOCKSIZE
 SIZEY = (BOARD_OFFSETY * 2 + BOARD_BLOCKS_HEIGHT) * BLOCKSIZE
 SIZE = [SIZEX , SIZEY]
 
+blockColors = []
 blocks = [
     [ # L
         #(355,30),
@@ -88,7 +90,7 @@ class Block:
             pixelOffsetY = self.blockOffsetY * BLOCKSIZE
             y = ((template[i][1] + pixelOffsetY) // BLOCKSIZE) - 1
             x = ((template[i][0] + pixelOffsetX) // BLOCKSIZE) - 7
-            grid[x][y]= 1
+            grid[x][y]= self.color
 
 
 
@@ -106,7 +108,8 @@ class Block:
             pixelOffsetX = self.blockOffsetX * BLOCKSIZE 
             pixelOffsetY = self.blockOffsetY * BLOCKSIZE
 
-            pygame.draw.rect(screen, self.color, [template[i][0] + pixelOffsetX, template[i][1] + pixelOffsetY, BLOCKSIZE, BLOCKSIZE])
+            pygame.draw.rect(screen, COLORS[0], [template[i][0] + pixelOffsetX, template[i][1] + pixelOffsetY, BLOCKSIZE, BLOCKSIZE])
+            pygame.draw.rect(screen, COLORS[self.color], [template[i][0] + pixelOffsetX + PIXEL_OUTLINE, template[i][1] + pixelOffsetY + PIXEL_OUTLINE, BLOCKSIZE-PIXEL_OUTLINE * 2, BLOCKSIZE-PIXEL_OUTLINE * 2])
     
 
 class Board:
@@ -128,8 +131,10 @@ class Board:
         x = BOARD_OFFSETX * BLOCKSIZE
         y = BOARD_OFFSETY * BLOCKSIZE
         x += i * BLOCKSIZE
-        y += j * BLOCKSIZE 
-        pygame.draw.rect(self.screen, COLORS[colorType], [x, y, BLOCKSIZE, BLOCKSIZE])
+        y += j * BLOCKSIZE
+
+        pygame.draw.rect(self.screen, COLORS[0], [x, y, BLOCKSIZE, BLOCKSIZE]) 
+        pygame.draw.rect(self.screen, COLORS[colorType], [x+PIXEL_OUTLINE, y+PIXEL_OUTLINE, BLOCKSIZE-PIXEL_OUTLINE*2, BLOCKSIZE-PIXEL_OUTLINE*2])
 
     def printBoard(self):
         for i, row in enumerate(self.cells):
@@ -153,6 +158,12 @@ class Game:
         self.defaultRate = 800
         self.tickSpeed = 0.3
         self.board = Board(self.screen, 20, 10)
+
+    def CreateNewActiveBlock(self):
+        randomColor = random.randint(1,len(COLORS)-1)
+        randomBlockType = random.randint(0,len(blocks)-1)
+        self.activeBlock = Block(randomColor, 0, 0, randomBlockType)
+
 
 
     def run(self):
@@ -185,8 +196,7 @@ class Game:
 
                 # randomly choose a block if first iteration
                 if self.activeRow == 0:
-                    self.activeBlock = Block((255, 0, 0), 0, 0, random.randint(0,4))
-
+                    self.CreateNewActiveBlock()
 
                 # check collision
                 if (self.activeBlock.checkCollision(self.board.cells)) == True:
