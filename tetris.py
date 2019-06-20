@@ -75,31 +75,30 @@ class Block:
         x = ((template[cell][0] + pixelOffsetX) // BLOCKSIZE) - 7
         return x, y
 
-    def checkCollisionY(self,grid):
+    def checkCollisionY(self,board):
         template = blocks[self.type]
         for pixel in range(4):
             x, y = self.calculatePos(template, pixel)
             #check if reach edges or other block
-            if y + 1 == BOARD_BLOCKS_HEIGHT or grid[x][y + 1] != 0:
+            print(str(x) + " " + str(y))
+            if y + 1 == BOARD_BLOCKS_HEIGHT or board.getCell(x, y + 1) != 0:
                 return True
         return False
 
-    def checkCollisionX(self, grid, offsetX):
+    def checkCollisionX(self, board, offsetX):
         template = blocks[self.type]
         for pixel in range(4):
             x, y = self.calculatePos(template, pixel)
             #check if reach edges or other block
-            if x + offsetX == BOARD_BLOCKS_WIDTH  or x + offsetX == -1 or grid[x + offsetX][y] != 0:
+            if x + offsetX == BOARD_BLOCKS_WIDTH  or x + offsetX == -1 or board.getCell(x + offsetX, y) != 0:
                 return True
         return False
 
-    def storeBlock(self, grid):
+    def storeBlock(self, board):
         template = blocks[self.type]
         for pixel in range(4):
             x, y = self.calculatePos(template, pixel)
-            grid[x][y]= self.color
-
-
+            board.setCell(x, y, self.color)
 
     def moveBlockY(self, blockOffsetX, blockOffsetY):
         self.blockOffsetX += blockOffsetX
@@ -126,15 +125,20 @@ class Board:
         self.SIZEY = sizeY
         self.screen = screen
         self.cells = []
-        for i, a in enumerate(range(0, sizeY)):
+        for i, a in enumerate(range(0, sizeX)):
             row = []
-            for cell in range(0, sizeX):
+            for cell in range(0, sizeY):
                 row.append(0)    
             self.cells.append(row)
 
+    def getCell(self, i, j):
+        return self.cells[i][j]
+
+    def setCell(self, i, j, val):
+        self.cells[i][j] = val
 
     def printCell(self, i, j):
-        colorType = self.cells[i][j]
+        colorType = self.getCell(i, j)
         x = BOARD_OFFSETX * BLOCKSIZE
         y = BOARD_OFFSETY * BLOCKSIZE
         x += i * BLOCKSIZE
@@ -153,9 +157,8 @@ class Board:
         for row in range(0, BOARD_BLOCKS_HEIGHT):
             count = 0
             for col in range(0, BOARD_BLOCKS_WIDTH):
-            
                 #check if empty
-                if self.cells[col][row] != 0:
+                if self.getCell(col, row) != 0:
                     count += 1
             # if line full
             if count == BOARD_BLOCKS_WIDTH - 1:
@@ -183,7 +186,7 @@ class Game:
         self.activeBlock = None
         self.defaultRate = 800
         self.tickSpeed = 0.1
-        self.board = Board(self.screen, 20, 10)
+        self.board = Board(self.screen, BOARD_BLOCKS_WIDTH, BOARD_BLOCKS_HEIGHT)
 
     def CreateNewActiveBlock(self):
         randomColor = random.randint(1,len(COLORS)-1)
@@ -207,10 +210,10 @@ class Game:
                 # if key pressed then rotate
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_e:
-                        if (self.activeBlock.checkCollisionX(self.board.cells, 1)) != True:
+                        if (self.activeBlock.checkCollisionX(self.board, 1)) != True:
                             self.activeBlock.moveBlockX(1)
                     if event.key == pygame.K_w:
-                        if (self.activeBlock.checkCollisionX(self.board.cells, -1)) != True:
+                        if (self.activeBlock.checkCollisionX(self.board, -1)) != True:
                             self.activeBlock.moveBlockX(-1)
                         
 
@@ -227,10 +230,10 @@ class Game:
                     self.CreateNewActiveBlock()
 
                 # check collision
-                if (self.activeBlock.checkCollisionY(self.board.cells)) == True:
+                if (self.activeBlock.checkCollisionY(self.board)) == True:
                     self.activeRow = 0
-                    # insert block into grid
-                    self.activeBlock.storeBlock(self.board.cells)
+                    # insert block into board
+                    self.activeBlock.storeBlock(self.board)
                     
                 else:
                     self.activeRow += 1
@@ -243,7 +246,8 @@ class Game:
                     self.timeElapsed = 0 
                 
                 
-                # check if an entire ligne is drawn            
+                # check if an entire ligne is drawn   
+                self.board.checkLine()         
                 #if (self.board.checkLine()) == True:
                     #self.board.eraseLine()
 
