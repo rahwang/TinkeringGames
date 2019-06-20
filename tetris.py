@@ -163,7 +163,7 @@ class Board:
                     count += 1
                 # if line full
                 if count == BOARD_BLOCKS_WIDTH - 1:
-                    print(row)
+                    print("Line!")
                     return True
         return False, None
                     
