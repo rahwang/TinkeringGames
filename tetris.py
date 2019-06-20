@@ -70,35 +70,46 @@ class Block:
         self.blockOffsetY = y
         self.type = blocktype
 
-    def checkCollision(self,grid):
+    
+    def calculatePos(self, template, cell):
+       
+        pixelOffsetX = self.blockOffsetX * BLOCKSIZE 
+        pixelOffsetY = self.blockOffsetY * BLOCKSIZE
+        y = ((template[cell][1] + pixelOffsetY) // BLOCKSIZE) - 1
+        x = ((template[cell][0] + pixelOffsetX) // BLOCKSIZE) - 7
+        return x, y
+
+    def checkCollisionY(self,grid):
         template = blocks[self.type]
-        for i in range(4):
-            pixelOffsetX = self.blockOffsetX * BLOCKSIZE 
-            pixelOffsetY = self.blockOffsetY * BLOCKSIZE
-            y = ((template[i][1] + pixelOffsetY) // BLOCKSIZE) - 1
-            x = ((template[i][0] + pixelOffsetX) // BLOCKSIZE) - 7
-            
+        for pixel in range(4):
+            x, y = self.calculatePos(template, pixel)
             #check if reach edges or other block
-            if x + 1 == BOARD_BLOCKS_WIDTH or y + 1 == BOARD_BLOCKS_HEIGHT or grid[x][y + 1] != 0:
+            if y + 1 == BOARD_BLOCKS_HEIGHT or grid[x][y + 1] != 0:
+                return True
+        return False
+
+    def checkCollisionX(self, grid, offsetX):
+        template = blocks[self.type]
+        for pixel in range(4):
+            x, y = self.calculatePos(template, pixel)
+            #check if reach edges or other block
+            if x + offsetX == BOARD_BLOCKS_WIDTH  or x + offsetX == -1 or grid[x + offsetX][y] != 0:
                 return True
         return False
 
     def storeBlock(self, grid):
         template = blocks[self.type]
-        for i in range(4):
-            pixelOffsetX = self.blockOffsetX * BLOCKSIZE 
-            pixelOffsetY = self.blockOffsetY * BLOCKSIZE
-            y = ((template[i][1] + pixelOffsetY) // BLOCKSIZE) - 1
-            x = ((template[i][0] + pixelOffsetX) // BLOCKSIZE) - 7
+        for pixel in range(4):
+            x, y = self.calculatePos(template, pixel)
             grid[x][y]= self.color
 
 
 
-    def fallBlock(self, blockOffsetX, blockOffsetY):
+    def moveBlockY(self, blockOffsetX, blockOffsetY):
         self.blockOffsetX += blockOffsetX
         self.blockOffsetY += blockOffsetY
         
-    def moveBlock(self, blockOffsetX):
+    def moveBlockX(self, blockOffsetX):
         self.blockOffsetX += blockOffsetX
 
 
@@ -181,9 +192,11 @@ class Game:
                 # if key pressed then rotate
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_e:
-                        self.activeBlock.moveBlock(1)
+                        if (self.activeBlock.checkCollisionX(self.board.cells, 1)) != True:
+                            self.activeBlock.moveBlockX(1)
                     if event.key == pygame.K_w:
-                        self.activeBlock.moveBlock(-1)
+                        if (self.activeBlock.checkCollisionX(self.board.cells, -1)) != True:
+                            self.activeBlock.moveBlockX(-1)
                         
 
             # draw board
@@ -199,7 +212,7 @@ class Game:
                     self.CreateNewActiveBlock()
 
                 # check collision
-                if (self.activeBlock.checkCollision(self.board.cells)) == True:
+                if (self.activeBlock.checkCollisionY(self.board.cells)) == True:
                     self.activeRow = 0
                     # insert block into grid
                     self.activeBlock.storeBlock(self.board.cells)
@@ -207,11 +220,11 @@ class Game:
                 else:
                     self.activeRow += 1
                     # draw the block (falling)
-                    self.activeBlock.fallBlock(0, 1)
+                    self.activeBlock.moveBlockY(0, 1)
 
                     self.activeBlock.drawBlock(self.screen)
 
-                    # Reset time to 0
+                    # Reset time to X0
                     self.timeElapsed = 0 
                 
                 
