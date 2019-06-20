@@ -8,7 +8,7 @@ BLOCKSIZE = 35
 PIXEL_OUTLINE = 2
 BOARD_OFFSETX = 7
 BOARD_OFFSETY = 1
-BOARD_BLOCKS_WIDTH = 10
+BOARD_BLOCKS_WIDTH = 6
 BOARD_BLOCKS_HEIGHT = 20
 SIZEX = (BOARD_OFFSETX * 2 + BOARD_BLOCKS_WIDTH) * BLOCKSIZE
 SIZEY = (BOARD_OFFSETY * 2 + BOARD_BLOCKS_HEIGHT) * BLOCKSIZE
@@ -17,38 +17,39 @@ SIZE = [SIZEX , SIZEY]
 blockColors = []
 blocks = [
     [ # L
-        (((BOARD_OFFSETX + 3) * BLOCKSIZE), ((BOARD_OFFSETY) * BLOCKSIZE)),
-        (((BOARD_OFFSETX + 4) * BLOCKSIZE), ((BOARD_OFFSETY) * BLOCKSIZE)),
-        (((BOARD_OFFSETX + 5) * BLOCKSIZE), ((BOARD_OFFSETY) * BLOCKSIZE)),
-        (((BOARD_OFFSETX + 5) * BLOCKSIZE), ((BOARD_OFFSETY + 1) * BLOCKSIZE))
+
+        (((BOARD_OFFSETX + (BOARD_BLOCKS_WIDTH // 2 - 2)) * BLOCKSIZE), ((BOARD_OFFSETY) * BLOCKSIZE)),
+        (((BOARD_OFFSETX + (BOARD_BLOCKS_WIDTH // 2 - 1)) * BLOCKSIZE), ((BOARD_OFFSETY) * BLOCKSIZE)),
+        (((BOARD_OFFSETX + (BOARD_BLOCKS_WIDTH // 2 )) * BLOCKSIZE), ((BOARD_OFFSETY) * BLOCKSIZE)),
+        (((BOARD_OFFSETX + (BOARD_BLOCKS_WIDTH // 2 )) * BLOCKSIZE), ((BOARD_OFFSETY + 1) * BLOCKSIZE))
     ],
 
     [ # Square
-        (((BOARD_OFFSETX + 3) * BLOCKSIZE), ((BOARD_OFFSETY) * BLOCKSIZE)),
-        (((BOARD_OFFSETX + 3) * BLOCKSIZE), ((BOARD_OFFSETY + 1) * BLOCKSIZE)),
-        (((BOARD_OFFSETX + 4) * BLOCKSIZE), ((BOARD_OFFSETY) * BLOCKSIZE)),
-        (((BOARD_OFFSETX + 4) * BLOCKSIZE), ((BOARD_OFFSETY + 1) * BLOCKSIZE)),
+        (((BOARD_OFFSETX + (BOARD_BLOCKS_WIDTH // 2 - 1 )) * BLOCKSIZE), ((BOARD_OFFSETY) * BLOCKSIZE)),
+        (((BOARD_OFFSETX + (BOARD_BLOCKS_WIDTH // 2 - 1)) * BLOCKSIZE), ((BOARD_OFFSETY + 1) * BLOCKSIZE)),
+        (((BOARD_OFFSETX + (BOARD_BLOCKS_WIDTH // 2 )) * BLOCKSIZE), ((BOARD_OFFSETY) * BLOCKSIZE)),
+        (((BOARD_OFFSETX + (BOARD_BLOCKS_WIDTH // 2 )) * BLOCKSIZE), ((BOARD_OFFSETY + 1) * BLOCKSIZE)),
     ],
 
     [ # line
-        (((BOARD_OFFSETX + 3) * BLOCKSIZE), ((BOARD_OFFSETY) * BLOCKSIZE)),
-        (((BOARD_OFFSETX + 4) * BLOCKSIZE), ((BOARD_OFFSETY) * BLOCKSIZE)),
-        (((BOARD_OFFSETX + 5) * BLOCKSIZE), ((BOARD_OFFSETY) * BLOCKSIZE)),
-        (((BOARD_OFFSETX + 6) * BLOCKSIZE), ((BOARD_OFFSETY) * BLOCKSIZE)),
+        (((BOARD_OFFSETX + (BOARD_BLOCKS_WIDTH // 2 - 2 )) * BLOCKSIZE), ((BOARD_OFFSETY) * BLOCKSIZE)),
+        (((BOARD_OFFSETX + (BOARD_BLOCKS_WIDTH // 2 - 1)) * BLOCKSIZE), ((BOARD_OFFSETY) * BLOCKSIZE)),
+        (((BOARD_OFFSETX + (BOARD_BLOCKS_WIDTH // 2 )) * BLOCKSIZE), ((BOARD_OFFSETY) * BLOCKSIZE)),
+        (((BOARD_OFFSETX + (BOARD_BLOCKS_WIDTH // 2 + 1)) * BLOCKSIZE), ((BOARD_OFFSETY) * BLOCKSIZE)),
     ],
 
     [ # half-cross
-        (((BOARD_OFFSETX + 3) * BLOCKSIZE), ((BOARD_OFFSETY) * BLOCKSIZE)),
-        (((BOARD_OFFSETX + 4) * BLOCKSIZE), ((BOARD_OFFSETY) * BLOCKSIZE)),
-        (((BOARD_OFFSETX + 5) * BLOCKSIZE), ((BOARD_OFFSETY) * BLOCKSIZE)),
-        (((BOARD_OFFSETX + 4) * BLOCKSIZE), ((BOARD_OFFSETY + 1) * BLOCKSIZE)),
+        (((BOARD_OFFSETX + (BOARD_BLOCKS_WIDTH // 2 - 1)) * BLOCKSIZE), ((BOARD_OFFSETY) * BLOCKSIZE)),
+        (((BOARD_OFFSETX + (BOARD_BLOCKS_WIDTH // 2 )) * BLOCKSIZE), ((BOARD_OFFSETY) * BLOCKSIZE)),
+        (((BOARD_OFFSETX + (BOARD_BLOCKS_WIDTH // 2 + 1)) * BLOCKSIZE), ((BOARD_OFFSETY) * BLOCKSIZE)),
+        (((BOARD_OFFSETX + (BOARD_BLOCKS_WIDTH // 2 )) * BLOCKSIZE), ((BOARD_OFFSETY + 1) * BLOCKSIZE)),
     ],
 
     [ # zigzag
-        (((BOARD_OFFSETX + 3) * BLOCKSIZE), ((BOARD_OFFSETY) * BLOCKSIZE)),
-        (((BOARD_OFFSETX + 3) * BLOCKSIZE), ((BOARD_OFFSETY + 1) * BLOCKSIZE)),
-        (((BOARD_OFFSETX + 4) * BLOCKSIZE), ((BOARD_OFFSETY + 1) * BLOCKSIZE)),
-        (((BOARD_OFFSETX + 4) * BLOCKSIZE), ((BOARD_OFFSETY + 2) * BLOCKSIZE)),
+        (((BOARD_OFFSETX + (BOARD_BLOCKS_WIDTH // 2 - 1)) * BLOCKSIZE), ((BOARD_OFFSETY) * BLOCKSIZE)),
+        (((BOARD_OFFSETX + (BOARD_BLOCKS_WIDTH // 2 - 1)) * BLOCKSIZE), ((BOARD_OFFSETY + 1) * BLOCKSIZE)),
+        (((BOARD_OFFSETX + (BOARD_BLOCKS_WIDTH // 2 )) * BLOCKSIZE), ((BOARD_OFFSETY + 1) * BLOCKSIZE)),
+        (((BOARD_OFFSETX + (BOARD_BLOCKS_WIDTH // 2 )) * BLOCKSIZE), ((BOARD_OFFSETY + 2) * BLOCKSIZE)),
     ],
 ]
 
@@ -80,7 +81,6 @@ class Block:
         for pixel in range(4):
             x, y = self.calculatePos(template, pixel)
             #check if reach edges or other block
-            print(str(x) + " " + str(y))
             if y + 1 == BOARD_BLOCKS_HEIGHT or board.getCell(x, y + 1) != 0:
                 return True
         return False
@@ -154,17 +154,18 @@ class Board:
 
     def checkLine(self):
         #For each col
-        for row in range(0, BOARD_BLOCKS_HEIGHT):
+        for row in range(0, BOARD_BLOCKS_WIDTH):
             count = 0
-            for col in range(0, BOARD_BLOCKS_WIDTH):
+            for col in range(0, BOARD_BLOCKS_HEIGHT):
                 #check if empty
-                if self.getCell(col, row) != 0:
+                if self.getCell(row, col) != 0:
                     count += 1
+                    print(count)
             # if line full
             if count == BOARD_BLOCKS_WIDTH - 1:
-                print(row)
-                return True, row
-        return False, None
+                print("lol")
+                return True
+        return False
 
     def eraseLine(self, row):
         return None
@@ -190,7 +191,8 @@ class Game:
 
     def CreateNewActiveBlock(self):
         randomColor = random.randint(1,len(COLORS)-1)
-        randomBlockType = random.randint(0,len(blocks)-1)
+        #randomBlockType = random.randint(0,len(blocks)-1)
+        randomBlockType = 1
         self.activeBlock = Block(randomColor, 0, 0, randomBlockType)
 
 
@@ -218,7 +220,6 @@ class Game:
                         
 
             # draw board
-            #pygame.draw.rect(self.screen, (255,255,255), [BOARD_OFFSETX * BLOCKSIZE, BOARD_OFFSETY * BLOCKSIZE, BLOCKSIZE * BOARD_BLOCKS_WIDTH, BLOCKSIZE * BOARD_BLOCKS_HEIGHT])
             self.board.printBoard()
 
             # Every x second
