@@ -151,6 +151,20 @@ class Board:
         for i, row in enumerate(self.cells):
             for j, col in enumerate(row): 
                 self.printCell(i,j)
+
+    def checkLine(self):
+        #For each row
+        for i, row in enumerate(self.cells):
+            count = 0
+            # For each cel in row
+            for j, col in enumerate(row): 
+                #check if empty
+                if col != 0:
+                    count += 1
+                # if line full
+                if count == BOARD_BLOCKS_WIDTH - 1:
+                    print("lol")
+                    
     
 
 class Game:
@@ -167,7 +181,7 @@ class Game:
         self.activeRow = 0
         self.activeBlock = None
         self.defaultRate = 800
-        self.tickSpeed = 0.3
+        self.tickSpeed = 0.1
         self.board = Board(self.screen, 20, 10)
 
     def CreateNewActiveBlock(self):
@@ -228,7 +242,9 @@ class Game:
                     self.timeElapsed = 0 
                 
                 
-            
+                # check if an entire ligne is drawn            
+                self.board.checkLine()
+
 
                 pygame.display.flip()            
 
