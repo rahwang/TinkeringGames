@@ -8,7 +8,7 @@ BLOCKSIZE = 35
 PIXEL_OUTLINE = 2
 BOARD_OFFSETX = 7
 BOARD_OFFSETY = 1
-BOARD_BLOCKS_WIDTH = 6
+BOARD_BLOCKS_WIDTH = 10
 BOARD_BLOCKS_HEIGHT = 20
 SIZEX = (BOARD_OFFSETX * 2 + BOARD_BLOCKS_WIDTH) * BLOCKSIZE
 SIZEY = (BOARD_OFFSETY * 2 + BOARD_BLOCKS_HEIGHT) * BLOCKSIZE
@@ -201,7 +201,7 @@ class Game:
     def CreateNewActiveBlock(self):
         randomColor = random.randint(1,len(COLORS)-1)
         #randomBlockType = random.randint(0,len(blocks)-1)
-        randomBlockType = 1
+        randomBlockType = 4
         self.activeBlock = Block(randomColor, 0, 0, randomBlockType)
 
 
