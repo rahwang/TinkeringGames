@@ -153,17 +153,19 @@ class Board:
                 self.printCell(i,j)
 
     def checkLine(self):
-        #For each row
-        for i, row in enumerate(self.cells):
+        #For each col
+        for col in range(0, BOARD_BLOCKS_HEIGHT):
             count = 0
-            # For each cel in row
-            for j, col in enumerate(row): 
+            for row in range(0, BOARD_BLOCKS_WIDTH):
+            
                 #check if empty
-                if col != 0:
+                if self.cells[row][col] != 0:
                     count += 1
                 # if line full
                 if count == BOARD_BLOCKS_WIDTH - 1:
-                    print("lol")
+                    print(row)
+                    return True
+        return False, None
                     
     
 
@@ -243,7 +245,8 @@ class Game:
                 
                 
                 # check if an entire ligne is drawn            
-                self.board.checkLine()
+                #if (self.board.checkLine()) == True:
+                    #self.board.eraseLine()
 
 
                 pygame.display.flip()            
